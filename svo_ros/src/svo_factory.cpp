@@ -89,9 +89,15 @@ DetectorOptions loadDetectorOptions(const ros::NodeHandle& pnh)
   o.threshold_secondary = vk::param<int>(pnh, "detector_threshold_secondary", 200);
   o.threshold_shitomasi = vk::param<int>(pnh, "detector_threshold_shitomasi", 100);
   if(vk::param<bool>(pnh, "use_edgelets", true))
+  {
     o.detector_type = DetectorType::kFastGrad;
+    std::cout << "Fast Gradddddddd!!!!" << std::endl;
+  }
   else
-    o.detector_type = DetectorType::kFast;
+  {
+    o.detector_type = DetectorType::kGrad;
+    std::cout << "Fas!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+  }
   return o;
 }
 

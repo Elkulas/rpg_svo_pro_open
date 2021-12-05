@@ -64,14 +64,53 @@ void Frame::initFrame(const cv::Mat& img, size_t n_pyr_levels)
 
   if (img.type() == CV_8UC1)
   {
+
+    // cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
+    // clahe->apply(img, img);
     frame_utils::createImgPyramid(img, n_pyr_levels, img_pyr_);
   }
   else if (img.type() == CV_8UC3)
   {
     cv::Mat gray_image;
     cv::cvtColor(img, gray_image, cv::COLOR_BGR2GRAY);
+
+    // cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
+    // clahe->apply(gray_image, gray_image);
     frame_utils::createImgPyramid(gray_image, n_pyr_levels, img_pyr_);
     original_color_image_ = img;
+  }
+  else if (img.type() == CV_16UC1)
+  {
+    LOG(INFO) << "16!!! image type " << img.type() << "!";
+
+    double value_min, value_max;
+    cv::minMaxIdx(img, &value_min, &value_max);
+
+    cv::Mat test(img.size(), CV_8UC1);
+    double minrange = value_min-1;
+    double maxrange = value_max+1;
+    // double minrange = 1100;
+    // double maxrange = 1500;
+
+    for (int j = 0; j < img.rows; ++j) {
+      for (int i = 0; i < img.cols; ++i) {
+
+        if(img.at<ushort>(j, i) < maxrange && img.at<ushort>(j, i) > minrange)
+          (test.at<uchar>(j, i)) = ((img.at<ushort>(j, i) - minrange) / (maxrange - minrange)) * 255.0;
+        else if(img.at<ushort>(j, i) >= maxrange)
+          test.at<uchar>(j, i) = 255;
+        else
+          test.at<uchar>(j, i) = 0;
+      }
+    }
+    frame_utils::createImgPyramid(test, n_pyr_levels, img_pyr_);
+
+    // cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
+    // clahe->apply(test, test);
+    cv::Mat test2(img.size(), CV_8UC3); 
+    cv::cvtColor(test, test2, cv::COLOR_GRAY2BGR);
+    original_color_image_ = test2;
+
   }
   else
   {

@@ -182,8 +182,7 @@ bool FrameHandlerBase::addImageBundle(const std::vector<cv::Mat>& imgs, const ui
   for (size_t i = 0; i < imgs.size(); ++i)
   {
     frames.push_back(
-        std::make_shared < Frame
-            > (cams_->getCameraShared(i), imgs[i].clone(), timestamp, options_.img_align_max_level + 1));
+        std::make_shared <Frame> (cams_->getCameraShared(i), imgs[i].clone(), timestamp, options_.img_align_max_level + 1));
     frames.back()->set_T_cam_imu(cams_->get_T_C_B(i));
     frames.back()->setNFrameIndex(i);
   }

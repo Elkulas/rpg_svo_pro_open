@@ -6,6 +6,7 @@
 namespace svo {
 
 // -----------------------------------------------------------------------------
+// 关联所使用的选项与参数
 struct FeatureTrackerOptions
 {
   /// We do the Lucas Kanade tracking in a pyramidal way. max_level specifies the

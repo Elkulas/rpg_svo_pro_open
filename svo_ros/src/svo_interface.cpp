@@ -325,6 +325,7 @@ bool SvoInterface::setImuPrior(const int64_t timestamp_nanoseconds)
   return true;
 }
 
+// 此处图像输入
 void SvoInterface::monoCallback(const sensor_msgs::ImageConstPtr& msg)
 {
   if(idle_)
@@ -339,6 +340,14 @@ void SvoInterface::monoCallback(const sensor_msgs::ImageConstPtr& msg)
   {
     ROS_ERROR("cv_bridge exception: %s", e.what());
   }
+
+  // 脂肪图均衡
+  // cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
+  // clahe->apply(image, image);
+  // cv::imshow("clahe", image);
+  // cv::waitKey(1);
+
+  // cv::equalizeHist(image, image);
 
   std::vector<cv::Mat> images;
   images.push_back(image.clone());

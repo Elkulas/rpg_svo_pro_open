@@ -376,6 +376,30 @@ void Visualizer::publishImages(const std::vector<cv::Mat>& images,
       cv::cvtColor(images[i], gray_image, cv::COLOR_BGR2GRAY);
       frame_utils::createImgPyramid(gray_image, img_pub_level_ + 1, img_pyr);
     }
+    else if (images[i].type() == CV_16UC1)
+    {
+      LOG(INFO) << "16!!! image type "  << "!";
+
+      double value_min, value_max;
+      cv::minMaxIdx(images[i], &value_min, &value_max);
+
+      cv::Mat test(images[i].size(), CV_8UC1);
+      double minrange = value_min-10;
+      double maxrange = value_max+10;
+
+      for (int j = 0; j < images[i].rows; ++j) {
+        for (int i = 0; i < images[i].cols; ++i) {
+
+          if(images[i].at<ushort>(j, i) < maxrange && images[i].at<ushort>(j, i) > minrange)
+            (test.at<uchar>(j, i)) = ((images[i].at<ushort>(j, i) - minrange) / (maxrange - minrange)) * 255.0;
+          else if(images[i].at<ushort>(j, i) >= maxrange)
+            test.at<uchar>(j, i) = 255;
+          else
+            test.at<uchar>(j, i) = 0;
+        }
+      }
+      frame_utils::createImgPyramid(test, img_pub_level_ + 1, img_pyr);
+    }
     else
     {
       LOG(FATAL) << "Unknown image type " << images[i].type() << "!";
