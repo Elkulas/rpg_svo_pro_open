@@ -377,6 +377,62 @@ void CannyDetector::detect(
   types_vec.assign(num_features, svo::FeatureType::kCorner);
 }
 
+//------------------------------------------------------------------------------
+void PixelDetector::detect(
+    const ImgPyr& img_pyr,
+    const cv::Mat& mask,
+    const size_t max_n_features,
+    Keypoints& px_vec,
+    Scores& score_vec,
+    Levels& level_vec,
+    Gradients& grad_vec,
+    FeatureTypes& types_vec)
+{
+  PixelGradient *pixelGradent_ = new PixelGradient;
+  if(!mask.empty())
+    pixelGradent_->computeGradentsWithMask(img_pyr.at(options_.sampling_level), mask);
+  else  
+    pixelGradent_->computeGradents(img_pyr.at(options_.sampling_level));
+
+
+  const int width = img_pyr.at(options_.sampling_level).cols;
+  const int height = img_pyr.at(options_.sampling_level).rows;
+  const int pyr_init_scale = 1 << options_.sampling_level;
+  // const int patternPadding = 2;
+
+  PixelSelector::Ptr ps(new PixelSelector(width, height, max_n_features, 5));
+
+  float *statusMap = new float[width * height];
+  int num = ps->makeMaps(pixelGradent_, statusMap, 1, false, 2);
+  //std::cout << "max_n_features " <<max_n_features << " " << "num " << num << std::endl; 
+  // if(num < static_cast<int>(max_n_features))
+  px_vec.resize(Eigen::NoChange, num);
+  // else{
+  //   std::cout << "hi" << std::endl;
+  //   px_vec.conservativeResize(Eigen::NoChange, static_cast<int>(max_n_features));
+  // }
+
+  size_t feature_index = 0;
+  for (int y = patternPadding + 1; y < height - patternPadding - 2; y++)
+    for (int x = patternPadding + 1; x < width - patternPadding - 2; x++) {
+        if(statusMap[x + y * width] != 0){
+          // if(feature_index > max_n_features)
+          //   break;
+          px_vec.col(feature_index++) = svo::Keypoint(x*pyr_init_scale, y*pyr_init_scale);  
+        }
+    }
+  
+  size_t num_features = feature_index - 1;
+  px_vec.conservativeResize(Eigen::NoChange, num_features);
+  score_vec.setConstant(num_features, 1.0);
+  level_vec.setConstant(num_features, options_.level);
+  grad_vec.resize(Eigen::NoChange, num_features);
+  types_vec.assign(num_features, svo::FeatureType::kCorner);
+  
+}
+
+
+
 void SobelDetector::detect(
     const ImgPyr& img_pyr,
     const cv::Mat& mask,

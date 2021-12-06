@@ -12,7 +12,7 @@
 #include <svo/common/camera_fwd.h>
 #include <svo/common/occupancy_grid_2d.h>
 #include <svo/direct/feature_detection_types.h>
-
+#include <svo/direct/PixelSelector.h>
 namespace svo {
 
 //------------------------------------------------------------------------------
@@ -241,6 +241,23 @@ class SobelDetector : public AbstractDetector
 public:
   using AbstractDetector::AbstractDetector; // default constructor
   virtual ~SobelDetector() = default;
+
+  virtual void detect(
+      const ImgPyr& img_pyr,
+      const cv::Mat& mask,
+      const size_t max_n_features,
+      Keypoints& px_vec,
+      Scores& score_vec,
+      Levels& level_vec,
+      Gradients& grad_vec,
+      FeatureTypes& types_vec) override;
+};
+
+class PixelDetector : public AbstractDetector
+{
+public:
+  using AbstractDetector::AbstractDetector; // default constructor
+  virtual ~PixelDetector() = default;
 
   virtual void detect(
       const ImgPyr& img_pyr,

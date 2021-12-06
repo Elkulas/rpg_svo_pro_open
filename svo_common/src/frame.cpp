@@ -64,9 +64,9 @@ void Frame::initFrame(const cv::Mat& img, size_t n_pyr_levels)
 
   if (img.type() == CV_8UC1)
   {
-
     // cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
     // clahe->apply(img, img);
+    
     frame_utils::createImgPyramid(img, n_pyr_levels, img_pyr_);
   }
   else if (img.type() == CV_8UC3)

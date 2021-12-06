@@ -19,6 +19,9 @@ set(HEADERS
   include/svo/direct/depth_filter.h
   include/svo/direct/depth_estimation.h
   include/svo/direct/elder_zucker.h
+  include/svo/direct/Utils.h
+  include/svo/direct/PixelSelector.h
+  include/svo/direct/PixelGradient.h
 )
 
 set(SOURCES
@@ -30,7 +33,12 @@ set(SOURCES
   src/depth_filter.cpp
   src/depth_estimation.cpp
   src/elder_zucker.cpp
+  src/Utils.cpp
+  src/PixelSelector.cpp
+  src/PixelGradient.cpp
   )
+
+include_directories(include/svo/direct)
 
 cs_add_library(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES})

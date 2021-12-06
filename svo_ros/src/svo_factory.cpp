@@ -95,7 +95,7 @@ DetectorOptions loadDetectorOptions(const ros::NodeHandle& pnh)
   }
   else
   {
-    o.detector_type = DetectorType::kGrad;
+    o.detector_type = DetectorType::kPixel;
     std::cout << "Fas!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
   }
   return o;

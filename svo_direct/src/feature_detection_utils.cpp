@@ -62,6 +62,9 @@ AbstractDetector::Ptr makeDetector(
   case DetectorType::kSobel:
     detector.reset(new SobelDetector(options, cam));
     break;
+  case DetectorType::kPixel:
+    detector.reset(new PixelDetector(options, cam));
+    break;
   default:
     SVO_ERROR_STREAM("Detector unknown!");
   }

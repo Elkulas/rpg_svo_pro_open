@@ -316,15 +316,35 @@ void initializeSeeds(
   }
   else
   {
+    // std::cout << "HHh ELSE" << std::endl;
+    // std::cout << "frame->px_vec_.cols() - frame->num_features_, " << frame->px_vec_.cols() - frame->num_features_ <<  std::endl;
     feature_detector->detect(
           frame->img_pyr_, frame->getMask(), max_n_features, new_px, new_scores,
           new_levels, new_grads, new_types);
+    // std::cout << "new_px " << new_px.cols() <<  std::endl;
     frame_utils::computeNormalizedBearingVectors(new_px, *frame->cam(), &new_f);
   }
 
   // Add features to frame.
   const size_t n_old = frame->num_features_;
   const size_t n_new = new_px.cols();
+  // std::cout << "rame->px_vec_.cols() " << frame->px_vec_.cols() << " n_old " << n_old << " new_px.cols() " << new_px.cols() << std::endl;
+  // if(frame->px_vec_.cols() < static_cast<int>(new_px.cols()+n_old))
+  // {
+  //   std::cout << "Hh" << std::endl;
+  //   new_px.resize(Eigen::NoChange, frame->px_vec_.cols() - static_cast<int>(n_old));
+  //   std::cout << "Check bug" << std::endl;
+  //   new_f.resize(Eigen::NoChange, frame->px_vec_.cols() - static_cast<int>(n_old));
+  //   std::cout << "Check bug" << std::endl;
+  //   new_grads.resize(Eigen::NoChange, frame->px_vec_.cols() - static_cast<int>(n_old));
+  //   std::cout << "Check bug" << std::endl;
+
+  //   new_scores.resize(frame->px_vec_.cols() - static_cast<int>(n_old));
+  //   std::cout << "Check bug" << std::endl;
+  //   new_levels.resize(frame->px_vec_.cols() - static_cast<int>(n_old));
+
+
+  // }
 
   CHECK_GE(frame->px_vec_.cols(), static_cast<int>(n_new+n_old));
   frame->px_vec_.middleCols(n_old, n_new) = new_px;
@@ -332,6 +352,7 @@ void initializeSeeds(
   frame->grad_vec_.middleCols(n_old, n_new) = new_grads;
   frame->score_vec_.segment(n_old, n_new) = new_scores;
   frame->level_vec_.segment(n_old, n_new) = new_levels;
+
   for(size_t i = 0, j = n_old; i < n_new; ++i, ++j)
   {
     if(new_types[i] == FeatureType::kCorner)
@@ -359,7 +380,6 @@ void initializeSeeds(
     frame->invmu_sigma2_a_b_vec_.block(1, n_old, 1, n_new).setConstant(seed::getInitSigma2FromMuRange(frame->seed_mu_range_));
     frame->invmu_sigma2_a_b_vec_.block(2, n_old, 2, n_new).setConstant(10.0);
   }
-
   SVO_DEBUG_STREAM("DepthFilter: "<< frame->cam()->getLabel() <<
                    " Initialized "<< n_new <<" new seeds");
 }
